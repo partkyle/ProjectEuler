@@ -1,14 +1,16 @@
 package com.partkyle.euler;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ServiceLoader;
-
 
 public class ProblemRunner {
 
-	private static String getProblemNumber() {
+	private String getProblemNumber() {
 		System.out.print("Problem #?: ");
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -25,8 +27,9 @@ public class ProblemRunner {
 		return number;
 	}
 
-	private static Solution getProblem(String number) {
+	private Solution getProblem(String number) {
 		ServiceLoader<Solution> problems = ServiceLoader.load(Solution.class);
+		changeServices(number);
 		for (Solution solution : problems) {
 			if (solution.getClass().getSimpleName().equals("Problem" + number))
 				return solution;
@@ -34,18 +37,37 @@ public class ProblemRunner {
 		throw new RuntimeException("Could not load Problem" + number);
 	}
 
+	private void changeServices(String number) {
+		String problem = "com.partkyle.euler.solutions.Problem" + number;
+
+		try {
+			FileOutputStream os = new FileOutputStream(
+					"src/META-INF/services/com.partkyle.euler.Solution");
+			os.write(problem.getBytes("UTF-8"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	public static void main(String[] args) {
 
-		String action = getProblemNumber();
+		ProblemRunner runner = new ProblemRunner();
+
+		String action = runner.getProblemNumber();
 
 		while (!"exit".equalsIgnoreCase(action)) {
 			try {
-				getProblem(action).solve();
+				runner.getProblem(action).solve();
 			} catch (Exception e) {
 				System.out.println(String.format(
 						"Problem implementation %s missing.", action));
 			}
-			action = getProblemNumber();
+			action = runner.getProblemNumber();
 
 		}
 	}
