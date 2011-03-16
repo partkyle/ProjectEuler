@@ -16,7 +16,6 @@ public class Problem7 implements Solution {
 			}
 			count++;
 		}
-		System.out.println(Euler.isPrime(prime));
 		System.out.println("Problem 7: " + prime);
 	}
 
