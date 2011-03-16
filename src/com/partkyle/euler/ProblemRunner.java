@@ -3,6 +3,8 @@ package com.partkyle.euler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ServiceLoader;
+
 
 public class ProblemRunner {
 
@@ -23,18 +25,25 @@ public class ProblemRunner {
 		return number;
 	}
 
+	private static Solution getProblem(String number) {
+		ServiceLoader<Solution> problems = ServiceLoader.load(Solution.class);
+		for (Solution solution : problems) {
+			if (solution.getClass().getSimpleName().equals("Problem" + number))
+				return solution;
+		}
+		throw new RuntimeException("Could not load Problem" + number);
+	}
+
 	public static void main(String[] args) {
+
 		String action = getProblemNumber();
 
 		while (!"exit".equalsIgnoreCase(action)) {
 			try {
-				Solution solution = (Solution) Class.forName(
-						"com.partkyle.euler.solutions.Problem" + action)
-						.newInstance();
-				solution.solve();
+				getProblem(action).solve();
 			} catch (Exception e) {
-				System.out.println(String.format("Problem implementation %s missing.",
-						action));
+				System.out.println(String.format(
+						"Problem implementation %s missing.", action));
 			}
 			action = getProblemNumber();
 
