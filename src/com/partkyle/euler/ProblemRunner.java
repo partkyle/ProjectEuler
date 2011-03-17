@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ServiceLoader;
@@ -28,8 +29,8 @@ public class ProblemRunner {
 	}
 
 	private Solution getProblem(String number) {
-		ServiceLoader<Solution> problems = ServiceLoader.load(Solution.class);
 		changeServices(number);
+		ServiceLoader<Solution> problems = ServiceLoader.load(Solution.class);
 		for (Solution solution : problems) {
 			if (solution.getClass().getSimpleName().equals("Problem" + number))
 				return solution;
@@ -41,14 +42,22 @@ public class ProblemRunner {
 		String problem = "com.partkyle.euler.solutions.Problem" + number;
 
 		try {
+			Class.forName(problem);
+
 			FileOutputStream os = new FileOutputStream(
-					"src/META-INF/services/com.partkyle.euler.Solution");
+					"bin/META-INF/services/com.partkyle.euler.Solution");
 			os.write(problem.getBytes("UTF-8"));
+
+			System.gc();
+			System.gc();
+			System.gc();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 
