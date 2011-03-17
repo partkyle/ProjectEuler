@@ -48,9 +48,6 @@ public class ProblemRunner {
 					"bin/META-INF/services/com.partkyle.euler.Solution");
 			os.write(problem.getBytes("UTF-8"));
 
-			System.gc();
-			System.gc();
-			System.gc();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
